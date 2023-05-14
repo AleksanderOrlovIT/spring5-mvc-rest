@@ -51,12 +51,10 @@ public class CustomerControllerTest {
     @Test
     public void testListCategories() throws Exception {
         CustomerDTO customer1 = new CustomerDTO();
-        customer1.setId(1L);
         customer1.setFirstName(FIRSTNAME);
         customer1.setLastName(LASTNAME);
 
         CustomerDTO customer2 = new CustomerDTO();
-        customer2.setId(2L);
         customer2.setFirstName("NewName");
         customer2.setLastName("NewName");
 
@@ -73,7 +71,6 @@ public class CustomerControllerTest {
     @Test
     public void testGetByNameCategories() throws Exception {
         CustomerDTO customer1 = new CustomerDTO();
-        customer1.setId(1L);
         customer1.setFirstName(FIRSTNAME);
         customer1.setLastName(LASTNAME);
 

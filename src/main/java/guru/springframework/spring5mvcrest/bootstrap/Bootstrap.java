@@ -4,7 +4,6 @@ import guru.springframework.spring5mvcrest.domain.Category;
 import guru.springframework.spring5mvcrest.domain.Customer;
 import guru.springframework.spring5mvcrest.repository.CategoryRepository;
 import guru.springframework.spring5mvcrest.repository.CustomerRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -54,22 +53,18 @@ public class Bootstrap implements CommandLineRunner {
         Customer freddy = new Customer();
         freddy.setFirstName("Freddy");
         freddy.setLastName("Meyers");
-        freddy.setCustomerUrl("/shop/customers/344");
 
         Customer joe = new Customer();
         joe.setFirstName("Joe");
         joe.setLastName("Buck");
-        joe.setCustomerUrl("/shop/customers/345");
 
         Customer micheal = new Customer();
         micheal.setFirstName("Micheal");
         micheal.setLastName("Weston");
-        micheal.setCustomerUrl("/shop/customers/346");
 
         Customer micheal2 = new Customer();
         micheal2.setFirstName("Micheal 2");
         micheal2.setLastName("Weston 2");
-        micheal2.setCustomerUrl("/shop/customers/347");
 
         customerRepository.save(freddy);
         customerRepository.save(joe);
