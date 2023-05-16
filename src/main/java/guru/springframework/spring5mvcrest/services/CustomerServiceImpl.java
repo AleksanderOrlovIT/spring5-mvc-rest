@@ -2,6 +2,7 @@ package guru.springframework.spring5mvcrest.services;
 
 import guru.springframework.spring5mvcrest.api.v1.mapper.CustomerMapper;
 import guru.springframework.spring5mvcrest.api.v1.model.CustomerDTO;
+import guru.springframework.spring5mvcrest.controllers.v1.CustomerController;
 import guru.springframework.spring5mvcrest.domain.Customer;
 import guru.springframework.spring5mvcrest.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
-    private final CustomerMapper customerMapper;
+    public final CustomerMapper customerMapper;
     private final CustomerRepository customerRepository;
 
     public CustomerServiceImpl(CustomerMapper customerMapper, CustomerRepository customerRepository) {
@@ -27,7 +28,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .stream()
                 .map(customer -> {
                     CustomerDTO customerDTO = customerMapper.customerToCustomerDTO(customer);
-                    customerDTO.setCustomerUrl("/api/v1/customers/" + customer.getId());
+                    customerDTO.setCustomerUrl(getCustomerUrl(customer.getId()));
                     return customerDTO;
                 })
                 .collect(Collectors.toList());
@@ -38,21 +39,28 @@ public class CustomerServiceImpl implements CustomerService {
 
         return customerRepository.findById(id)
                 .map(customerMapper::customerToCustomerDTO)
-                .orElseThrow(RuntimeException::new);
+                .map(customerDTO -> {
+                    //set API URL
+                    customerDTO.setCustomerUrl(getCustomerUrl(id));
+                    return customerDTO;
+                })
+                .orElseThrow(ResourceNotFoundException::new);
     }
 
     @Override
     public CustomerDTO createNewCustomer(CustomerDTO customerDTO) {
-        return saveAndReturnDto(customerMapper.customerDTOtoCustomer(customerDTO));
+
+        return saveAndReturnDTO(customerMapper.customerDTOtoCustomer(customerDTO));
     }
 
-    private CustomerDTO saveAndReturnDto(Customer customer){
+    private CustomerDTO saveAndReturnDTO(Customer customer) {
         Customer savedCustomer = customerRepository.save(customer);
 
-        CustomerDTO returnDTO = customerMapper.customerToCustomerDTO(savedCustomer);
+        CustomerDTO returnDto = customerMapper.customerToCustomerDTO(savedCustomer);
 
-        returnDTO.setCustomerUrl("/api/v1/customer/" + savedCustomer.getId());
-        return returnDTO;
+        returnDto.setCustomerUrl(getCustomerUrl(savedCustomer.getId()));
+
+        return returnDto;
     }
 
     @Override
@@ -60,12 +68,13 @@ public class CustomerServiceImpl implements CustomerService {
         Customer customer = customerMapper.customerDTOtoCustomer(customerDTO);
         customer.setId(id);
 
-        return saveAndReturnDto(customer);
+        return saveAndReturnDTO(customer);
     }
 
     @Override
     public CustomerDTO patchCustomer(Long id, CustomerDTO customerDTO) {
         return customerRepository.findById(id).map(customer -> {
+
             if(customerDTO.getFirstname() != null){
                 customer.setFirstname(customerDTO.getFirstname());
             }
@@ -74,10 +83,17 @@ public class CustomerServiceImpl implements CustomerService {
                 customer.setLastname(customerDTO.getLastname());
             }
 
-            CustomerDTO returnDTO = customerMapper.customerToCustomerDTO(customerRepository.save(customer));
-            returnDTO.setCustomerUrl("/api/v1/customer/" + id);
-            return returnDTO;
-        }).orElseThrow(RuntimeException::new);
+            CustomerDTO returnDto = customerMapper.customerToCustomerDTO(customerRepository.save(customer));
+
+            returnDto.setCustomerUrl(getCustomerUrl(id));
+
+            return returnDto;
+
+        }).orElseThrow(ResourceNotFoundException::new);
+    }
+
+    private String getCustomerUrl(Long id) {
+        return CustomerController.BASE_URL + "/" + id;
     }
 
     @Override
