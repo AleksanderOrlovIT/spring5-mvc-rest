@@ -50,7 +50,7 @@ public class CustomerController {
     }
 
     @DeleteMapping({"/{id}"})
-    public ResponseEntity<Void> patchCustomer(@PathVariable Long id){
+    public ResponseEntity<Void> deleteCustomer(@PathVariable Long id){
         customerService.deleteCustomerById(id);
 
         return new ResponseEntity<Void>(HttpStatus.OK);
